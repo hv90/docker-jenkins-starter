@@ -64,7 +64,7 @@ pipeline {
 
             steps {
                 script {            
-                    dir('/var/jenkins_home/workspace/projeto') {                        
+                    dir('/var/jenkins_home/workspace/project') {                        
                         sh "git config user.name '${GITHUB_USER_NAME}'"
                         sh "git config user.email '${GITHUB_USER_EMAIL}'"
     
