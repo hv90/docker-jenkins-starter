@@ -73,7 +73,8 @@ pipeline {
                         sh "git commit -m '${params.COMMIT_MESSAGE}' --allow-empty"  
                         sh "git status"
                         sh "ls -la"
-                        
+
+                        sh "git pull origin main --rebase"
                         sh "git push 'https://${GITHUB_TOKEN}@${GITHUB_REPO}'"
                     }
                 }
