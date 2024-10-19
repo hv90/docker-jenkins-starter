@@ -74,9 +74,7 @@ pipeline {
                         sh "git status"
                         sh "ls -la"
                         
-                        sh "repo_url='https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO}'"
-                        sh "echo 'Pushing to ${repo_url}'"
-                        sh "git push ${repo_url}"
+                        sh "git push 'https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO}'"
                     }
                 }
             }
