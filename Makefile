@@ -47,7 +47,7 @@ jenkins-initial-admin-password:
 jenkins-connect-agent-node:
 	$(DOCKER_COMPOSE) exec $(CONTAINER_NAME) \
 		sh -c "cd /var/jenkins_home/agent/ \
-		&& curl -O http://192.168.0.108:8080/jnlpJars/agent.jar \
-		&& java -jar agent.jar -url http://192.168.0.108:8080/ \
+		&& curl -O ${JENKINS_URL}/jnlpJars/agent.jar \
+		&& java -jar agent.jar -url ${JENKINS_URL}/ \
 		-secret ${JENKINS_AGENT_SECRET} \
 		-name 'agent node' -workDir '/var/jenkins_home/agent'"
