@@ -1,10 +1,19 @@
-# Variáveis
+# Variables
 DOCKER_COMPOSE = docker-compose
 CONTAINER_NAME = jenkins
 
-# Regras do Makefile
-all: build up
+JOB_NAME=commit%20and%20push%20to%20github
+COMMIT_MESSAGE?=Atualizações automáticas pelo Jenkins
+AGENT_NAME="agent node"
+WORK_DIR= /var/jenkins_home/agent
 
+
+# get environment variables from .env file
+ifneq ("$(wildcard .env)","")
+include .env
+endif
+
+# Makefile rules
 build:
 	$(DOCKER_COMPOSE) build
 
@@ -25,36 +34,17 @@ clean:
 
 restart: down up
 
-docker-bash:
-	$(DOCKER_COMPOSE) exec $(CONTAINER_NAME) bash
-
-# Comando para acessar a senha inicial de admin no Jenkins
-initial-admin-password:
-	$(DOCKER_COMPOSE) exec $(CONTAINER_NAME) cat /var/jenkins_home/secrets/initialAdminPassword
-
-# Comando para visualizar status do Jenkins
 status:
 	$(DOCKER_COMPOSE) ps
 
-# Variáveis
-CONTAINER_NAME="jenkins" # give a make status to get container info
-JOB_NAME=commit%20and%20push%20to%20github
-COMMIT_MESSAGE?=Atualizações automáticas pelo Jenkins
-AGENT_NAME="agent node"
-WORK_DIR="/var/jenkins_home/agent"
+docker-bash:
+	$(DOCKER_COMPOSE) exec $(CONTAINER_NAME) bash
 
 
-# Carregar variáveis do arquivo .env
-ifneq ("$(wildcard .env)","")
-include .env
-endif
+jenkins-initial-admin-password:
+	$(DOCKER_COMPOSE) exec $(CONTAINER_NAME) cat /var/jenkins_home/secrets/initialAdminPassword
 
-run-jenkins:
-	docker-compose up -d jenkins
-	sleep 20  # Espera o Jenkins iniciar
-	curl -X POST "${JENKINS_URL}/job/${JOB_NAME}/buildWithParameters?COMMIT_MESSAGE=${COMMIT_MESSAGE}" --user "seu-usuario:seu-token" 
-
-connect-agent:
+jenkins-connect-agent-node:
 	$(DOCKER_COMPOSE) exec $(CONTAINER_NAME) \
 		sh -c "cd /var/jenkins_home/agent/ \
 		&& curl -O http://192.168.0.108:8080/jnlpJars/agent.jar \

@@ -11,7 +11,7 @@ services:
       - "50000:50000" # port for agents
     volumes:
       - jenkins_home:/var/jenkins_home
-      - /home/hv90/Desktop/me/docker-jenkins-starter:/var/jenkins_home/workspace/project
+      - ${PROJECT_ROOT_DIR}:/var/jenkins_home/workspace/project
     networks:
       - jenkins_network
 
@@ -19,7 +19,7 @@ services:
     image: jenkins/agent
     volumes:
       - jenkins_home:/var/jenkins_home  
-      - /home/hv90/Desktop/me/docker-jenkins-starter:/var/jenkins_home/agent 
+      - ${PROJECT_ROOT_DIR}:/var/jenkins_home/agent 
     environment:
       JENKINS_URL: http://192.168.0.108:8080 
       JENKINS_SECRET: ${JENKINS_AGENT_SECRET}
