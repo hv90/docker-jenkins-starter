@@ -73,11 +73,10 @@ pipeline {
                         sh "git commit -m '${params.COMMIT_MESSAGE}' --allow-empty"  
                         sh "git status"
                         sh "ls -la"
-                        sh """
-                            repo_url='https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO}'
-                            echo 'Pushing to ${repo_url}'
-                            git push ${repo_url}
-                        """
+                        
+                        sh "repo_url='https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO}'"
+                        sh "echo 'Pushing to ${repo_url}'"
+                        sh "git push ${repo_url}"
                     }
                 }
             }
