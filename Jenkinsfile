@@ -66,9 +66,12 @@ pipeline {
                 script {                    
                     sh "git config user.name '${GITHUB_USER_NAME}'"
                     sh "git config user.email '${GITHUB_USER_EMAIL}'"
-                    
+
+                    sh "git checkout main"
                     sh "git add ."                    
-                    sh "git commit -m '${params.COMMIT_MESSAGE}'"                    
+                    sh "git commit -m '${params.COMMIT_MESSAGE}' --allow-empty"  
+                    sh "git status"
+                    sh "ls -la"
                     sh "git push https://'${GITHUB_TOKEN}'@'${GITHUB_REPO}'"
                 }
             }
