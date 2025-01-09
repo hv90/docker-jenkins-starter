@@ -16,7 +16,7 @@
   
   NETLIFY_AUTH_TOKEN=
   ```
-*Make sure to have all fields filled in*
+\* *Make sure to have fields filled in*
 
 - you will need 2 terminals to run pipelines with this project
 
