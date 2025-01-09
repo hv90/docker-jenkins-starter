@@ -28,5 +28,5 @@
 
 #### Terminal #2:
 1. `make jenkins-create-pipeline`
-2. `make jenkins-run-pipeline`
+2. `make jenkins-run-pipeline COMMIT_MESSAGE="your commit message here" DEPLOY_TO_NETLIFY=false`
 3. `make jenkins-console` *(optional. It retrieves the build current status)*
