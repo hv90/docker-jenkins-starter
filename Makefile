@@ -52,6 +52,7 @@ jenkins-connect-agent-node:
 		-secret ${JENKINS_AGENT_SECRET} \
 		-name 'agent node' -workDir '/var/jenkins_home/agent'"
 
+
 wait-for-jenkins:
 	@echo "Awaiting Jenkins get ready..."
 	@until curl -s ${JENKINS_URL}/login > /dev/null; do echo "awaiting Jenkins..."; sleep 10; done
@@ -86,7 +87,7 @@ jenkins-run-pipeline:
 		echo "Try `make jenkins-run-pipeline COMMIT_MESSAGE=message DEPLOY_TO_NETLIFY=true`"; \
 	else \
 		echo "Running pipeline ${PIPELINE_NAME}..."; \
-		$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME} -p COMMIT_MESSAGE=$(COMMIT_MESSAGE) -p DEPLOY_TO_NETLIFY=$(DEPLOY_TO_NETLIFY)"; \
+		$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME} -p COMMIT_MESSAGE='$(COMMIT_MESSAGE)' -p DEPLOY_TO_NETLIFY=$(DEPLOY_TO_NETLIFY)"; \
 		echo "Pipeline fired!"; \
 	fi
 
