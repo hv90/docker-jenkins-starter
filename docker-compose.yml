@@ -12,6 +12,8 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
       - ${PROJECT_ROOT_DIR}:/var/jenkins_home/workspace/project
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
     networks:
       - jenkins_network
 
@@ -21,7 +23,7 @@ services:
       - jenkins_home:/var/jenkins_home  
       - ${PROJECT_ROOT_DIR}:/var/jenkins_home/agent 
     environment:
-      JENKINS_URL: http://192.168.0.108:8080 
+      JENKINS_URL: http://localhost:8080 
       JENKINS_SECRET: ${JENKINS_AGENT_SECRET}
       JENKINS_AGENT_NAME: "agent node"
 

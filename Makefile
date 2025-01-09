@@ -2,6 +2,11 @@
 DOCKER_COMPOSE = docker-compose
 CONTAINER_NAME = jenkins
 
+JENKINS_SERVICE=jenkins
+PIPELINE_NAME=my-job
+COMMIT_MESSAGE='Atualizações automáticas pelo Jenkins' 
+RUN_COMMIT_PUSH=false
+
 JOB_NAME=commit%20and%20push%20to%20github
 COMMIT_MESSAGE?=Atualizações automáticas pelo Jenkins
 AGENT_NAME="agent node"
@@ -41,6 +46,9 @@ docker-bash:
 	$(DOCKER_COMPOSE) exec $(CONTAINER_NAME) bash
 
 
+jenkins-commands-list:
+	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} help"
+
 jenkins-initial-admin-password:
 	$(DOCKER_COMPOSE) exec $(CONTAINER_NAME) cat /var/jenkins_home/secrets/initialAdminPassword
 
@@ -51,3 +59,46 @@ jenkins-connect-agent-node:
 		&& java -jar agent.jar -url ${JENKINS_URL}/ \
 		-secret ${JENKINS_AGENT_SECRET} \
 		-name 'agent node' -workDir '/var/jenkins_home/agent'"
+
+wait-for-jenkins:
+	@echo "Awaiting Jenkins get ready..."
+	@until curl -s ${JENKINS_URL}/login > /dev/null; do echo "awaiting Jenkins..."; sleep 10; done
+	@echo "Jenkins is ready now!"
+
+get-jenkins-cli:
+	@echo "Getting jenkins-cli"
+	$(DOCKER_COMPOSE) exec $(JENKINS_SERVICE) bash -c "curl -sSL http://localhost:8080/jnlpJars/jenkins-cli.jar -o /usr/share/jenkins/jenkins-cli.jar"
+
+jenkins-start-service:
+	@make wait-for-jenkins
+	@make get-jenkins-cli
+	@make jenkins-connect-agent-node
+
+jenkins-delete-pipeline:
+	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} delete-job ${PIPELINE_NAME}"
+	@echo "Pipeline ${PIPELINE_NAME} deleted!"
+
+jenkins-list-jobs:
+	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} list-jobs"
+
+jenkins-create-pipeline:
+	@echo "Creating pipeline ${PIPELINE_NAME}..."
+
+	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} groovy = < /var/jenkins_home/workspace/project/jenkinsPipeline.groovy"
+
+	@echo "Pipeline created!"
+
+
+jenkins-run-pipeline:
+	@if [ -z "$(COMMIT_MESSAGE)" ] || [ -z "$(RUN_COMMIT_PUSH)" ]; then \
+		echo "Try `make jenkins-run-pipeline COMMIT_MESSAGE=message RUN_COMMIT_PUSH=true`"; \
+	else \
+		echo "Running pipeline ${PIPELINE_NAME}..."; \
+		$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME}"; \
+		$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} console ${PIPELINE_NAME}"; \
+		echo "Pipeline fired!"; \
+	fi
+
+jenkins-console:
+	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} console ${PIPELINE_NAME}"; \
+		echo "Pipeline fired!"
