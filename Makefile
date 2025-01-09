@@ -4,14 +4,6 @@ CONTAINER_NAME = jenkins
 
 JENKINS_SERVICE=jenkins
 PIPELINE_NAME=my-job
-COMMIT_MESSAGE='Atualizações automáticas pelo Jenkins' 
-RUN_COMMIT_PUSH=false
-
-JOB_NAME=commit%20and%20push%20to%20github
-COMMIT_MESSAGE?=Atualizações automáticas pelo Jenkins
-AGENT_NAME="agent node"
-WORK_DIR= /var/jenkins_home/agent
-
 
 # get environment variables from .env file
 ifneq ("$(wildcard .env)","")
@@ -90,15 +82,13 @@ jenkins-create-pipeline:
 
 
 jenkins-run-pipeline:
-	@if [ -z "$(COMMIT_MESSAGE)" ] || [ -z "$(RUN_COMMIT_PUSH)" ]; then \
-		echo "Try `make jenkins-run-pipeline COMMIT_MESSAGE=message RUN_COMMIT_PUSH=true`"; \
+	@if [ -z "$(COMMIT_MESSAGE)" ] || [ -z "$(DEPLOY_TO_NETLIFY)" ]; then \
+		echo "Try `make jenkins-run-pipeline COMMIT_MESSAGE=message DEPLOY_TO_NETLIFY=true`"; \
 	else \
 		echo "Running pipeline ${PIPELINE_NAME}..."; \
-		$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME}"; \
-		$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} console ${PIPELINE_NAME}"; \
+		$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME} -p COMMIT_MESSAGE=$(COMMIT_MESSAGE) -p DEPLOY_TO_NETLIFY=$(DEPLOY_TO_NETLIFY)"; \
 		echo "Pipeline fired!"; \
 	fi
 
 jenkins-console:
 	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} console ${PIPELINE_NAME}"; \
-		echo "Pipeline fired!"

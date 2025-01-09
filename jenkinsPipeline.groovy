@@ -22,8 +22,14 @@ def job = jenkins.getItem(jobName)
 
 if (job == null) {
     println("Creating new pipeline job: ${jobName}")
-    // job = new WorkflowJob(jenkins, jobName)
+    
     job = jenkins.createProject(org.jenkinsci.plugins.workflow.job.WorkflowJob, jobName)
+
+    def parametersDefinition = new ParametersDefinitionProperty(
+        new StringParameterDefinition('COMMIT_MESSAGE', 'Atualizações automáticas pelo Jenkins', 'Mensagem de commit para o Git'),
+        new BooleanParameterDefinition('DEPLOY_TO_NETLIFY', false, 'Fazer deploy para o netlify?')
+    )
+    job.addProperty(parametersDefinition)
 } else {
     println("Job already exists: ${jobName}")
 }
