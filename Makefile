@@ -83,13 +83,15 @@ jenkins-create-pipeline:
 
 
 jenkins-run-pipeline:
-	@if [ -z "$(COMMIT_MESSAGE)" ] || [ -z "$(DEPLOY_TO_NETLIFY)" ]; then \
-		echo "Try `make jenkins-run-pipeline COMMIT_MESSAGE=message DEPLOY_TO_NETLIFY=true`"; \
-	else \
-		echo "Running pipeline ${PIPELINE_NAME}..."; \
-		$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME} -p COMMIT_MESSAGE='$(COMMIT_MESSAGE)' -p DEPLOY_TO_NETLIFY=$(DEPLOY_TO_NETLIFY)"; \
-		echo "Pipeline fired!"; \
+	@if [ -z "$(COMMIT_MESSAGE)" ] || [ -z "$(DEPLOY_TO_NETLIFY)" ] || [ -z "$(IS_FIRST_COMMIT)" ]; then \
+		echo "Try \`make jenkins-run-pipeline COMMIT_MESSAGE='message' DEPLOY_TO_NETLIFY=true IS_FIRST_COMMIT=false\`"; \
+		exit 1; \
 	fi
+
+	@echo "Running pipeline ${PIPELINE_NAME}..."
+	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME} -p COMMIT_MESSAGE='$(COMMIT_MESSAGE)' -p DEPLOY_TO_NETLIFY=$(DEPLOY_TO_NETLIFY) -p IS_FIRST_COMMIT='$(IS_FIRST_COMMIT)'"
+	@echo "Pipeline fired!"
+	
 
 jenkins-console:
 	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} console ${PIPELINE_NAME}"; \

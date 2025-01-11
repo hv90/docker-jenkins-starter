@@ -5,7 +5,6 @@ import org.jenkinsci.plugins.workflow.cps.*
 
 def jobName = "my-job"
 
-// List files in directory
 // def dir = new File("./var/jenkins_home/workspace/project/") // 
 // if (dir.exists() && dir.isDirectory()) {
 //     dir.eachFile { file ->
@@ -27,7 +26,8 @@ if (job == null) {
 
     def parametersDefinition = new ParametersDefinitionProperty(
         new StringParameterDefinition('COMMIT_MESSAGE', 'Atualizações automáticas pelo Jenkins', 'Mensagem de commit para o Git'),
-        new BooleanParameterDefinition('DEPLOY_TO_NETLIFY', false, 'Fazer deploy para o netlify?')
+        new BooleanParameterDefinition('DEPLOY_TO_NETLIFY', false, 'Fazer deploy para o netlify?'),
+        new BooleanParameterDefinition('IS_FIRST_COMMIT', false, 'É o primeiro commit?')
     )
     job.addProperty(parametersDefinition)
 } else {

@@ -4,6 +4,7 @@ pipeline {
     parameters {
         string(name: 'COMMIT_MESSAGE', defaultValue: 'Atualizações automáticas pelo Jenkins', description: 'Mensagem de commit para o Git')
         booleanParam(name: 'DEPLOY_TO_NETLIFY', defaultValue: false, description: 'Fazer deploy para o netlify?')
+        booleanParam(name: 'IS_FIRST_COMMIT', defaultValue: false, description: 'É o primeiro commit?')
     }
 
     // environment {
@@ -96,7 +97,11 @@ pipeline {
                         sh "git init"
                         sh "git config user.name '${env.GITHUB_USER_NAME}'"
                         sh "git config user.email '${env.GITHUB_USER_EMAIL}'"
-                        sh "git remote set-url origin https://'${env.GITHUB_TOKEN}'@'${env.GITHUB_REPO}'"
+
+                        if(params.IS_FIRST_COMMIT) {
+                        //sh "git remote set-url origin https://'${env.GITHUB_TOKEN}'@'${env.GITHUB_REPO}'"
+                            sh "git remote add origin https://'${env.GITHUB_REPO}'"
+                        } 
                         
                         // Realizar commit e push
                         checkoutOrCreateMainBranch()
