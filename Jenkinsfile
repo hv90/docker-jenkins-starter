@@ -70,16 +70,40 @@ pipeline {
             }
             steps {
                 script {
+                    def checkoutOrCreateMainBranch = { ->
+                        def branchExists = sh(script: 'git show-ref --quiet refs/heads/main', returnStatus: true) == 0
+                        
+                        if (branchExists) {
+                            // Se a branch 'main' já existir, faz o checkout
+                            sh 'git checkout main'
+                        } else {
+                            // Se a branch 'main' não existir localmente
+                            def remoteBranchExists = sh(script: 'git show-ref --quiet refs/remotes/origin/main', returnStatus: true) == 0
+                            
+                            if (remoteBranchExists) {
+                                // Se a branch 'main' existir remotamente, cria localmente e faz checkout
+                                // sh 'git checkout -b main origin/main'
+                                sh 'git checkout -b main'
+                            } else {
+                                // Se a branch 'main' não existir nem localmente, nem remotamente
+                                sh 'git checkout -b main'
+                            }
+                        }
+                    }
+
                     dir('/var/jenkins_home/workspace/project') {
                         // Configurar o Git
+                        sh "git init"
                         sh "git config user.name '${env.GITHUB_USER_NAME}'"
                         sh "git config user.email '${env.GITHUB_USER_EMAIL}'"
+                        sh "git remote set-url origin https://'${env.GITHUB_TOKEN}'@'${env.GITHUB_REPO}'"
                         
                         // Realizar commit e push
-                        sh "git checkout main"
+                        checkoutOrCreateMainBranch()
                         sh "git add ."
                         sh "git commit -m '${params.COMMIT_MESSAGE}' --allow-empty"
-                        sh "git pull origin main --rebase"
+                        sh "git branch -M main"
+                        // sh "git pull origin main --rebase"
                         sh "git push 'https://${env.GITHUB_TOKEN}@${env.GITHUB_REPO}'"
                     }
                 }
