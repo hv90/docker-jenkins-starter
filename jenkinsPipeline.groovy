@@ -15,7 +15,7 @@ def jobName = "my-job"
 //     println "Invalid or missing directory."
 // }
 
-def pathname = '/var/jenkins_home/workspace/project/docker-jenkins-starter/jenkinsPipeline.groovy'
+def pathname = '/var/jenkins_home/workspace/project/jenkinsPipeline.groovy'
 
 def dir = new File("./var/jenkins_home/workspace/project/") 
 if (dir.exists() && dir.isDirectory()) {
