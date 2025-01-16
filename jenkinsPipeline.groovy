@@ -14,7 +14,7 @@ def jobName = "my-job"
 // } else {
 //     println "Invalid or missing directory."
 // }
-
+def hello = new File('/var/jenkins_home/workspace/project/Jenkinsfile').text
 def pipelineDefinition = new File('/var/jenkins_home/workspace/project/Jenkinsfile').text
 
 def jenkins = Jenkins.instance
