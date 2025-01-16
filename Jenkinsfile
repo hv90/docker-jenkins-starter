@@ -5,6 +5,7 @@ pipeline {
         string(name: 'COMMIT_MESSAGE', defaultValue: 'Atualizações automáticas pelo Jenkins', description: 'Mensagem de commit para o Git')
         booleanParam(name: 'DEPLOY_TO_NETLIFY', defaultValue: false, description: 'Fazer deploy para o netlify?')
         booleanParam(name: 'IS_FIRST_COMMIT', defaultValue: false, description: 'É o primeiro commit?')
+        booleanParam(name: 'IS_MAINTENANCE', defaultValue: false, description: 'Pipeline de manutenção?')
     }
 
     // environment {
@@ -21,7 +22,8 @@ pipeline {
             steps {
                 script {
                     // Carregar variáveis de ambiente do arquivo .env
-                    def envFile = readFile '/var/jenkins_home/workspace/project/.env'
+                    def pathName = params.IS_MAINTENANCE ? '/var/jenkins_home/workspace/project/.env': '/var/jenkins_home/workspace/project/.env'
+                    def envFile = readFile pathName
                     envFile.split('\n').each { line ->
                         if (line.trim() && !line.startsWith('#')) { 
                             def (key, value) = line.split('=')
