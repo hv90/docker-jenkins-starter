@@ -15,14 +15,14 @@ def jobName = "my-job"
 //     println "Invalid or missing directory."
 // }
 
-def pathname = '/var/jenkins_home/workspace/project/jenkinsPipeline.groovy'
+def pathname = '/var/jenkins_home/workspace/project/Jenkinsfile'
 
 def dir = new File("./var/jenkins_home/workspace/project/") 
 if (dir.exists() && dir.isDirectory()) {
     dir.eachFile { file ->
         println file.name
         if (file.name == 'docker-jenkins-starter') {
-            pathname = '/var/jenkins_home/workspace/project/docker-jenkins-starter/jenkinsPipeline.groovy'
+            pathname = '/var/jenkins_home/workspace/project/docker-jenkins-starter/Jenkinsfile'
         }
     }
 } else {
@@ -30,7 +30,7 @@ if (dir.exists() && dir.isDirectory()) {
 }
 println("pathname: ${pathname}")
 def hello = '/var/jenkins_home/workspace/project/Jenkinsfile'
-def pipelineDefinition = new File(hello).text
+def pipelineDefinition = new File(pathname).text
 
 def jenkins = Jenkins.instance
 def job = jenkins.getItem(jobName)
