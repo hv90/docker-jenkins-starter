@@ -77,10 +77,10 @@ jenkins-list-jobs:
 jenkins-create-pipeline:
 	@echo "Creating pipeline ${PIPELINE_NAME}..."
 
-	@if [ -z "$(IS_MAINTENANCE)" ]; then \
-		echo "Try \`make jenkins-run-pipeline IS_MAINTENANCE=false\`"; \
-		exit 1; \
-	fi; \
+	# @if [ -z "$(IS_MAINTENANCE)" ]; then \
+	# 	echo "Try \`make jenkins-run-pipeline IS_MAINTENANCE=false\`"; \
+	# 	exit 1; \
+	# fi; \
 	
 	@if [ "$(IS_MAINTENANCE)" = "true" ]; then \
 		PATHNAME="/var/jenkins_home/workspace/project/jenkinsPipeline.groovy"; \
@@ -98,13 +98,19 @@ jenkins-run-pipeline:
 		exit 1; \
 	fi
 
-	@if [ -z "$(IS_MAINTENANCE)" ]; then \
-		echo "Try \`make jenkins-run-pipeline COMMIT_MESSAGE='message' DEPLOY_TO_NETLIFY=true IS_FIRST_COMMIT=false IS_MAINTENANCE=true\`"; \
-	fi
+	# @if [ -z "$(IS_MAINTENANCE)" ]; then \
+	# 	echo "Try \`make jenkins-run-pipeline COMMIT_MESSAGE='message' DEPLOY_TO_NETLIFY=true IS_FIRST_COMMIT=false IS_MAINTENANCE=true\`"; \
+	# fi
 
-	@echo "Running pipeline ${PIPELINE_NAME}..."
-	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME} -p COMMIT_MESSAGE='$(COMMIT_MESSAGE)' -p DEPLOY_TO_NETLIFY=$(DEPLOY_TO_NETLIFY) -p IS_MAINTENANCE='$(IS_MAINTENANCE)'"
-	@echo "Pipeline fired!"
+	@if [ "$(IS_MAINTENANCE)" = "true" ]; then \
+		MAINTENANCE=true; \
+	else \
+		MAINTENANCE=false; \
+	fi; \
+	\
+	echo "Running pipeline ${PIPELINE_NAME}..."; \
+	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME} -p COMMIT_MESSAGE='$(COMMIT_MESSAGE)' -p DEPLOY_TO_NETLIFY=$(DEPLOY_TO_NETLIFY) -p IS_MAINTENANCE=$$MAINTENANCE"
+	@echo "Pipeline fired!"; \
 	
 
 jenkins-console:
