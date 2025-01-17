@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Carregar variáveis de ambiente do arquivo .env
-                    def pathName = params.IS_MAINTENANCE ? '/var/jenkins_home/workspace/project/.env': '/var/jenkins_home/workspace/project/.env'
+                    def pathName = params.IS_MAINTENANCE ? '/var/jenkins_home/workspace/project/.env': '/var/jenkins_home/workspace/project/docker-jenkins-starter/.env'
                     def envFile = readFile pathName
                     envFile.split('\n').each { line ->
                         if (line.trim() && !line.startsWith('#')) { 

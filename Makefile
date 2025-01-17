@@ -77,17 +77,20 @@ jenkins-list-jobs:
 jenkins-create-pipeline:
 	@echo "Creating pipeline ${PIPELINE_NAME}..."
 
+	@if [ -z "$(IS_MAINTENANCE)" ]; then \
+		echo "Try \`make jenkins-run-pipeline IS_MAINTENANCE=false\`"; \
+		exit 1; \
+	fi; \
+	
 	@if [ "$(IS_MAINTENANCE)" = "true" ]; then \
 		PATHNAME="/var/jenkins_home/workspace/project/jenkinsPipeline.groovy"; \
 	else \
 		PATHNAME="/var/jenkins_home/workspace/project/docker-jenkins-starter/jenkinsPipeline.groovy"; \
 	fi; \
 	\
-	echo "IS_MAINTENANCE: $(IS_MAINTENANCE), using path: $$PATHNAME"; \
-	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "export IS_MAINTENANCE=$(IS_MAINTENANCE) && java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} groovy = < $$PATHNAME"; \
+	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} groovy = < $$PATHNAME"; \
 
 	@echo "Pipeline created!"
-
 
 jenkins-run-pipeline:
 	@if [ -z "$(COMMIT_MESSAGE)" ] || [ -z "$(DEPLOY_TO_NETLIFY)" ] || [ -z "$(IS_FIRST_COMMIT)" ]; then \
@@ -95,8 +98,12 @@ jenkins-run-pipeline:
 		exit 1; \
 	fi
 
+	@if [ -z "$(IS_MAINTENANCE)" ]; then \
+		echo "Try \`make jenkins-run-pipeline COMMIT_MESSAGE='message' DEPLOY_TO_NETLIFY=true IS_FIRST_COMMIT=false IS_MAINTENANCE=true\`"; \
+	fi
+
 	@echo "Running pipeline ${PIPELINE_NAME}..."
-	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME} -p COMMIT_MESSAGE='$(COMMIT_MESSAGE)' -p DEPLOY_TO_NETLIFY=$(DEPLOY_TO_NETLIFY)"
+	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME} -p COMMIT_MESSAGE='$(COMMIT_MESSAGE)' -p DEPLOY_TO_NETLIFY=$(DEPLOY_TO_NETLIFY) -p IS_MAINTENANCE='$(IS_MAINTENANCE)'"
 	@echo "Pipeline fired!"
 	
 
