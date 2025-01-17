@@ -32,6 +32,7 @@ if (job == null) {
     def parametersDefinition = new ParametersDefinitionProperty(
         new StringParameterDefinition('COMMIT_MESSAGE', 'Atualizações automáticas pelo Jenkins', 'Mensagem de commit para o Git'),
         new BooleanParameterDefinition('DEPLOY_TO_NETLIFY', false, 'Fazer deploy para o netlify?'),
+        new BooleanParameterDefinition('IS_FIRST_COMMIT', false, 'É o primeiro commit?'),
         new BooleanParameterDefinition('IS_MAINTENANCE', false, 'Pipeline de manutenção?')
     )
     job.addProperty(parametersDefinition)

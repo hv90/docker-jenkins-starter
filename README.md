@@ -24,6 +24,7 @@
 *These steps must be run at the root of this project*
 #### Terminal #1:
 1. `make up-and-build`
+*(await like 10 seconds before next step)*
 2. `make jenkins-start-service`
 
 #### Terminal #2:
