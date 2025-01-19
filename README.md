@@ -33,7 +33,10 @@ This automation intends to simplify github push pipeline by using jenkins and do
 
 #### At the root of the project you want to push to git
 1. clone/download this repo at the root of the project you want to push to git
-2. create a .env file at the root of this cloned/downloaded repo, copy and paste inside it the .env template previously provided, make sure to fill in this .env of yours
+2. create a .env file at the root of this cloned/downloaded repo, copy and paste inside it the .env template previously provided, make sure to fill in this .env of yours (make sure you have added permission to change this repo via github token (PAT), add the github url without https:// or http://)
+3. add docker-jenkins-starter to .gitignore file
+
+**The terminals must be run at the local docker-jenkins-starter repo**
 
 #### Terminal #1:
 1. `make up-and-build`
