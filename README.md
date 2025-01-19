@@ -10,7 +10,7 @@ This automation intends to simplify github push pipeline by using jenkins and do
 - have a local .env file at the root of this cloned/downloaded project. It must have the following structure:
 
   ```
-  PROJECT_ROOT_DIR=the/absolute/path/to/your/project
+  PROJECT_ROOT_DIR=the/absolute/path/to/your/local/project
 
   GITHUB_TOKEN=github_pat_goes_in_here
   GITHUB_USER_EMAIL=user@email.com
