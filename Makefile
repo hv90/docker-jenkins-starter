@@ -94,7 +94,7 @@ jenkins-run-pipeline:
 	fi
 
 	@echo "Running pipeline ${PIPELINE_NAME}..."
-	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME} -p COMMIT_MESSAGE='$(COMMIT_MESSAGE)' -p DEPLOY_TO_NETLIFY=${DEPLOY_TO_NETLIFY} -p IS_MAINTENANCE=${IS_MAINTENANCE} -p IS_FIRST_COMMIT=${IS_FIRST_COMMIT}"
+	$(DOCKER_COMPOSE) exec -u jenkins $(JENKINS_SERVICE) bash -c "java -jar /usr/share/jenkins/jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_USERNAME}:${JENKINS_PASSWORD} build ${PIPELINE_NAME} -p COMMIT_MESSAGE='$(COMMIT_MESSAGE)' -p DEPLOY_TO_NETLIFY=${DEPLOY_TO_NETLIFY} -p IS_MAINTENANCE=${IS_MAINTENANCE}"
 	@echo "Pipeline fired!"; \
 
 jenkins-create-and-run-pipeline:
@@ -105,7 +105,7 @@ jenkins-create-and-run-pipeline:
 
 	@make jenkins-create-pipeline IS_MAINTENANCE=${IS_MAINTENANCE}
 	
-	@make jenkins-run-pipeline DEPLOY_TO_NETLIFY=${DEPLOY_TO_NETLIFY} IS_FIRST_COMMIT=${IS_FIRST_COMMIT} IS_MAINTENANCE=${IS_MAINTENANCE} COMMIT_MESSAGE='${COMMIT_MESSAGE}'
+	@make jenkins-run-pipeline DEPLOY_TO_NETLIFY=${DEPLOY_TO_NETLIFY} IS_MAINTENANCE=${IS_MAINTENANCE} COMMIT_MESSAGE='${COMMIT_MESSAGE}'
 	
 
 jenkins-console:

@@ -28,7 +28,7 @@
 2. `make jenkins-start-service`
 
 #### Terminal #2:
-1. `make jenkins-create-and-run-pipeline IS_FIRST_COMMIT=false COMMIT_MESSAGE="your commit message here" DEPLOY_TO_NETLIFY=false`
+1. `make jenkins-create-and-run-pipeline COMMIT_MESSAGE="your commit message here" DEPLOY_TO_NETLIFY=false`
 2. `make jenkins-console` *(optional. It retrieves the build current status)*
 
 ### make jenkins-create-and-run-pipeline common params
@@ -36,5 +36,4 @@
 | Param             | Mandatory | Default Value |
 |-------------------|-----------|---------------|
 | COMMIT_MESSAGE    |    Yes    |        -      |
-| IS_FIRST_COMMIT   |    No     |      false    |
 | DEPLOY_TO_NETLIFY |    No     |      false    |

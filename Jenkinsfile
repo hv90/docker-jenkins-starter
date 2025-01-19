@@ -100,10 +100,12 @@ pipeline {
                         sh "git config user.name '${env.GITHUB_USER_NAME}'"
                         sh "git config user.email '${env.GITHUB_USER_EMAIL}'"
 
-                        if(params.IS_FIRST_COMMIT) {
-                        //sh "git remote set-url origin https://'${env.GITHUB_TOKEN}'@'${env.GITHUB_REPO}'"
-                            sh "git remote add origin https://'${env.GITHUB_REPO}'"
+                        def originExists = sh(script: 'git remote | grep origin', returnStatus: true)
+                        if (originExists == 0) {
+                            sh 'git remote remove origin'
                         } 
+                        
+                        sh "git remote add origin https://'${env.GITHUB_REPO}'"
                         
                         // Realizar commit e push
                         checkoutOrCreateMainBranch()
